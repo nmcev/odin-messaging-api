@@ -32,6 +32,7 @@ connectMongo().catch((err) => console.log(err));
 // routes 
 app.use('/api', indexRoute.login);
 app.use('/api', indexRoute.profile);
+app.use('/api', indexRoute.imgUpload);
 
 //initialize socket connection
 const io = socketHandler(server);
