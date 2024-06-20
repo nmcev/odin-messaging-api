@@ -24,7 +24,7 @@ module.exports = {
             return res.status(400).json({ errors: errors.array() });
         }    
         
-        let { username, password } = req.body;
+        let { username, password, roles } = req.body;
         username = username.toLowerCase(); // for preventing similar usernames with uppercase e.g: john, joHn.
 
         try {
@@ -37,7 +37,7 @@ module.exports = {
 
             const hashedPW = await bcryptjs.hash(password, 10);
 
-            const newUser = new User({ username, password: hashedPW });
+            const newUser = new User({ username, password: hashedPW, roles });
             await newUser.save();
 
             res.json({ message: 'User created successfully' });
