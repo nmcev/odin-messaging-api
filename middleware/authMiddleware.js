@@ -5,7 +5,7 @@ require('dotenv').config()
 const authenticateToken = (req, res, next) => {
     const token = req.headers['authorization'];
   if (!token) {
-        res.status(401).json({ message: 'Access denied' })
+        return res.status(401).json({ message: 'Access denied' })
     }
 
     try {
@@ -14,7 +14,7 @@ const authenticateToken = (req, res, next) => {
 
         next();
     } catch (error) {
-        res.status(400).json({ message: 'Invalid token' });
+        return res.status(400).json({ message: 'Invalid token' });
     }
 }
 
