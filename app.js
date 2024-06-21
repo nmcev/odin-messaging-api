@@ -30,6 +30,9 @@ async function connectMongo() {
 connectMongo().catch((err) => console.log(err));
 
 // routes 
+app.get('/', (req, res) => {
+    res.json({ message: 'Messaging app API'});
+})
 app.use('/api', indexRoute.login);
 app.use('/api', indexRoute.profile);
 app.use('/api', indexRoute.imgUpload);
