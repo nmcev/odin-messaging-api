@@ -14,7 +14,7 @@ module.exports = {
                 }
                 return true;
             }),
-            body('password').isLength({ min: 1 }).trim().withMessage('Password must be specified.'),
+            body('password').isLength({ min: 5 }).trim().withMessage('Password must be 5 characters at latest.'),
 
     async function(req, res, next) {
 
