@@ -4,7 +4,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const indexRoute = require('./routes/index')
 const morgan = require("morgan");
-
+const cors = require('cors');
 const server = http.createServer(app);
 
 app.use(express.json());
@@ -16,6 +16,11 @@ require('dotenv').config();
 // set up morgan middleware
 app.use(morgan("tiny"));
 
+// cors setup
+app.use(cors({
+    origin: ['http://localhost:5173'],
+    credentials: true
+}))
 // mongo connection 
 const mongoose = require('mongoose');
 const { debug } = require('console');
