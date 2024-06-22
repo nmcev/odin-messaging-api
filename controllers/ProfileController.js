@@ -1,5 +1,6 @@
 const joinedAt = require("../lib/joinedAt");
 const User = require("../models/User");
+const Messages = require('../models/Message');
 
 module.exports = {
 
@@ -112,5 +113,19 @@ module.exports = {
             console.error('Error searching items:', error);
             res.status(500).json({ error: 'Internal Server Error' });
           }
+    },
+    chats_get: async (req, res, next) => {
+
+        try {
+            const { userId } = req.params;
+
+            const sentUsers = await Messages.distinct('receiver', { sender: userId });
+
+            res.json(sentUsers);
+            
+        } catch(e) {
+            next(e)
+        }
+
     }
 }
