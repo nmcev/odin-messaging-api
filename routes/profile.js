@@ -16,6 +16,6 @@ router.put('/profile', authenticateToken, profileControllers.profile_put);
 // handle delete user profile
 router.delete('/profile', authenticateToken, profileControllers.profile_delete);
 
-router.get('/search', authenticateToken, profileControllers.search_get);
+router.get('/search', profileControllers.search_get);
 
 module.exports = router;
