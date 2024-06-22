@@ -96,5 +96,21 @@ module.exports = {
         } catch(error) {
             next(error);
         }
+    },
+    search_get: async(req, res, next) => {
+
+        const { query }  = req.query;
+
+        try {
+            const results = await User.find({ username: { $regex: new RegExp(query, 'i') } });
+
+            res.json(results);
+
+          } catch (error) {
+
+
+            console.error('Error searching items:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+          }
     }
 }
