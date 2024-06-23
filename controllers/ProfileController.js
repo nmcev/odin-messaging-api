@@ -112,7 +112,7 @@ module.exports = {
         try {
             const { userId } = req.params;
 
-            const sentUsers = await Messages.distinct('receiver', { sender: userId });
+            const sentUsers = await Messages.distinct('receiver', { sender: userId }).populate('receiver', 'username profilePic');
 
             res.json(sentUsers);
             
