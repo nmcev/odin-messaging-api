@@ -112,9 +112,16 @@ module.exports = {
         try {
             const { userId } = req.params;
 
-            const sentUsers = await Messages.distinct('receiver', { sender: userId }).populate('receiver', 'username profilePic');
+                const receivedFromUserIds = await Messages.distinct('sender', { receiver: userId });
 
-            res.json(sentUsers);
+                const sentToUserIds = await Messages.distinct('receiver', { sender: userId });
+
+                const distinctUserIds = Array.from(new Set([...receivedFromUserIds, ...sentToUserIds]));
+
+                const users = await User.find({ _id: { $in: distinctUserIds } }, 'username profilePic');
+
+
+             res.json(users);
             
         } catch(e) {
             next(e)
