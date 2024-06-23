@@ -49,23 +49,16 @@ module.exports = {
 
         try {
 
-            const { username, profilePic } = req.body;
+            const {profilePic } = req.body;
 
-            if (!username && !profilePic) {
+            if (!profilePic) {
                 return res.status(400).json({ message: "No changes provided." });
             }
 
             const currentUser = await User.findById(userId);
 
-            if (username && currentUser.username !== username) {
-                const existingUser = await User.findOne({ username });
-                if (existingUser) {
-                    return res.status(400).json({ message: "Username already exists!" });
-                }
-            }
 
             const updatedInfo = {
-                username: username || currentUser.username,
                 profilePic: profilePic || currentUser.profilePic,
             };
 
