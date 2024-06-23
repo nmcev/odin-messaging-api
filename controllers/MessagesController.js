@@ -19,7 +19,7 @@ module.exports = {
                     { sender: userId, receiver: otherUserId },
                     { sender: otherUserId, receiver: userId }
                 ]          
-            }).sort({ sendAt: -1});
+            });
 
 
             res.status(200).json(messages);
