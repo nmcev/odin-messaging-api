@@ -18,7 +18,7 @@ app.use(morgan("tiny"));
 
 // cors setup
 app.use(cors({
-    origin: ['http://localhost:5173'],
+    origin: ['http://localhost:5173', 'https://talkmate.muha.tech'],
     credentials: true
 }))
 // mongo connection 
