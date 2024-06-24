@@ -107,25 +107,50 @@ module.exports = {
             res.status(500).json({ error: 'Internal Server Error' });
           }
     },
-    chats_get: async (req, res, next) => {
-
+    chats_get:async (req, res, next) => {
         try {
-            const { userId } = req.params;
+          const { userId } = req.params;
+      
+          const receivedFromUserIds = await Messages.distinct('sender', { receiver: userId });
+          const sentToUserIds = await Messages.distinct('receiver', { sender: userId });
+          const distinctUserIds = Array.from(new Set([...receivedFromUserIds, ...sentToUserIds]));
+      
+          const users = await User.find({ _id: { $in: distinctUserIds } }, 'username profilePic');
+      
+          const usersWithLastMessages = await Promise.all(users.map(async (user) => {
+            const lastMessage = await Messages.findOne(
+              {
+                $or: [
+                  { sender: userId, receiver: user._id },
+                  { sender: user._id, receiver: userId }
+                ]
+              },
+              {
+                content: 1,
+                sendAt: 1
+              },
+              { sort: { sendAt: -1 } }
+            );
+      
+            const lastMessageContent = lastMessage ? lastMessage.content : '';
+            const lastMessageSendAt = lastMessage ? lastMessage.sendAt : '';
+      
+            return {
+              _id: user._id,
+              username: user.username,
+              profilePic: user.profilePic,
+              lastMessage: lastMessageContent,
+                lastMessageSendAt
 
-                const receivedFromUserIds = await Messages.distinct('sender', { receiver: userId });
+            };
+          }));
+      
+          usersWithLastMessages.sort((a, b) => new Date(b.lastMessageSendAt) - new Date(a.lastMessageSendAt));
 
-                const sentToUserIds = await Messages.distinct('receiver', { sender: userId });
-
-                const distinctUserIds = Array.from(new Set([...receivedFromUserIds, ...sentToUserIds]));
-
-                const users = await User.find({ _id: { $in: distinctUserIds } }, 'username profilePic');
-
-
-             res.json(users);
-            
-        } catch(e) {
-            next(e)
+          res.json(usersWithLastMessages);
+        } catch (error) {
+          next(error); 
         }
-
-    }
+      }
+      
 }
