@@ -1,4 +1,5 @@
 const Messages = require('../models/Message');
+const GlobalMessages = require('../models/GlobalMessage');
 
 module.exports = {
 
@@ -30,6 +31,17 @@ module.exports = {
         }
 
 
+    },
+    globalMessages_get: async (req, res, next) => {
+        try {
+            const messages = await GlobalMessages.find().populate('sender');
+            
+            
+
+            res.status(200).json(messages);
+        } catch (error) {
+            next(error);
+        }
     }
 }
 
