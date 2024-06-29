@@ -8,7 +8,7 @@ module.exports = {
         const { userId } = req.user;
         
         try {
-            const user = await User.findById(userId);
+            const user = await User.findById(userId).select('-password');
 
             if (!user) {
                 return res.status(404).json({ message: "User Not Found!"})
@@ -28,7 +28,7 @@ module.exports = {
         
         try {
             
-            const user = await User.findOne({ username });
+            const user = await User.findOne({ username }).select('-password');
 
             if (!user) {
                 return res.status(404).json({ message: "User Not Found!"})
@@ -55,7 +55,7 @@ module.exports = {
                 return res.status(400).json({ message: "No changes provided." });
             }
 
-            const currentUser = await User.findById(userId);
+            const currentUser = await User.findById(userId).select('-password');
 
 
             const updatedInfo = {
@@ -79,7 +79,7 @@ module.exports = {
 
         try {
 
-            const deletedUser = await User.findByIdAndDelete(userId);
+            const deletedUser = await User.findByIdAndDelete(userId).select('-password');
 
             if (!deletedUser) {
                 return res.status(404).json({ message: "User not found or already deleted!" });
@@ -96,8 +96,9 @@ module.exports = {
         const { query }  = req.query;
 
         try {
-            const results = await User.find({ username: { $regex: new RegExp(query, 'i') } });
+            const results = await User.find({ username: { $regex: new RegExp(query, 'i') } }).select('-password');
 
+            
             res.json(results);
 
           } catch (error) {
@@ -111,7 +112,7 @@ module.exports = {
         try {
           const { userId } = req.params;
       
-          const receivedFromUserIds = await Messages.distinct('sender', { receiver: userId });
+          const receivedFromUserIds = await Messages.distinct('sender', { receiver: userId }); 
           const sentToUserIds = await Messages.distinct('receiver', { sender: userId });
           const distinctUserIds = Array.from(new Set([...receivedFromUserIds, ...sentToUserIds]));
       
@@ -127,7 +128,8 @@ module.exports = {
               },
               {
                 content: 1,
-                sendAt: 1
+                sendAt: 1,
+                password: 0
               },
               { sort: { sendAt: -1 } }
             );
