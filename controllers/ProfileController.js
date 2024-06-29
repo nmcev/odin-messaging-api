@@ -129,7 +129,6 @@ module.exports = {
               {
                 content: 1,
                 sendAt: 1,
-                password: 0
               },
               { sort: { sendAt: -1 } }
             );
