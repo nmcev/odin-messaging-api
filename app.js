@@ -18,7 +18,7 @@ app.use(morgan("tiny"));
 
 // cors setup
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://talkmate.muha.tech'],
+    origin: ['http://localhost:5173', 'https://talkmate-odin.netlify.app'],
     credentials: true
 }))
 // mongo connection 
