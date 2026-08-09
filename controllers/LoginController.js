@@ -8,9 +8,9 @@ require('dotenv').config();
 module.exports = {
     register_post: [
         
-        body('username').isLength({ min: 1 }).trim().withMessage('Username must be specified.'),
+        body('username').trim().isLength({ min: 1 }).withMessage('Username must be specified.'),
         // custom validation removed for better UX    
-        body('password').isLength({ min: 5 }).trim().withMessage('Password must be 5 characters at latest.'),
+        body('password').trim().isLength({ min: 5 }).withMessage('Password must be 5 characters at latest.'),
 
     async function(req, res, next) {
 
@@ -46,9 +46,9 @@ module.exports = {
 ],
 
     login_post: [         
-        body('username').isLength({ min: 1 }).trim().withMessage('Username must be specified.'),
+        body('username').trim().isLength({ min: 1 }).withMessage('Username must be specified.'),
         // custom validation removed for better UX    
-        body('password').isLength({ min: 1 }).trim().withMessage('Password must be specified.'),
+        body('password').trim().isLength({ min: 1 }).withMessage('Password must be specified.'),
 
     async function(req, res, next) {
 
