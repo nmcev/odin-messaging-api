@@ -25,6 +25,7 @@ app.use(cors({
 const mongoose = require('mongoose');
 const { debug } = require('console');
 const socketHandler = require('./lib/socketHandler');
+const errorHandler = require('./middleware/errorHandler');
 const mongoDB = process.env.MONGO_URI
 
 async function connectMongo() {
@@ -49,22 +50,7 @@ app.use('/api',
 const io = socketHandler(server);
 
 // Error handler middleware
-app.use((err, req, res, next) => {
-   debug('Error:', err);
-
-    let statusCode = 500;
-    let message = 'Internal Server Error';
-
-    if (err.name === 'ValidationError') {
-        statusCode = 400; 
-        message = err.message;
-    } else if (err.name === 'UnauthorizedError') {
-        statusCode = 401; 
-        message = 'Unauthorized Access';
-    }
-    
-    res.status(statusCode).json({ error: message });
-});
+app.use(errorHandler);
 
 
 const PORT = 3000;
