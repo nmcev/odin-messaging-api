@@ -48,7 +48,7 @@ module.exports = {
     login_post: [         
         body('username').trim().isLength({ min: 1 }).withMessage('Username must be specified.'),
         // custom validation removed for better UX    
-        body('password').trim().isLength({ min: 1 }).withMessage('Password must be specified.'),
+        body('password').trim().isLength({ min: 5 }).withMessage('Password must be specified.'),
 
     async function(req, res, next) {
 
