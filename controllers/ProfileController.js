@@ -102,10 +102,7 @@ module.exports = {
             res.json(results);
 
           } catch (error) {
-
-
-            console.error('Error searching items:', error);
-            res.status(500).json({ error: 'Internal Server Error' });
+            next(error);
           }
     },
     chats_get:async (req, res, next) => {
