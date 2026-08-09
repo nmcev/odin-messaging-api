@@ -38,10 +38,12 @@ connectMongo().catch((err) => console.log(err));
 app.get('/', (req, res) => {
     res.json({ message: 'Messaging app API'});
 })
-app.use('/api', indexRoute.login);
-app.use('/api', indexRoute.profile);
-app.use('/api', indexRoute.imgUpload);
-app.use('/api', indexRoute.messages)
+app.use('/api',
+    indexRoute.login,
+    indexRoute.profile,
+    indexRoute.imgUpload,
+    indexRoute.messages
+);
 
 //initialize socket connection
 const io = socketHandler(server);
