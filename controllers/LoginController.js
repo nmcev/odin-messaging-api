@@ -6,15 +6,11 @@ const User = require('../models/User');
 require('dotenv').config();
 
 module.exports = {
-    register_post:[
-            body('username').isLength({ min: 1 }).trim().withMessage('Username must be specified.').
-            custom((value) => {
-                if (value !== value.toLowerCase()) {
-                    throw new Error('Username must be in lowercase.');
-                }
-                return true;
-            }),
-            body('password').isLength({ min: 5 }).trim().withMessage('Password must be 5 characters at latest.'),
+    register_post: [
+        
+        body('username').isLength({ min: 1 }).trim().withMessage('Username must be specified.'),
+        // custom validation removed for better UX    
+        body('password').isLength({ min: 5 }).trim().withMessage('Password must be 5 characters at latest.'),
 
     async function(req, res, next) {
 
@@ -50,13 +46,8 @@ module.exports = {
 ],
 
     login_post: [         
-        body('username').isLength({ min: 1 }).trim().withMessage('Username must be specified.').
-        custom(value => {
-            if (value !== value.toLowerCase()) {
-                throw new Error('Username must be in lowercase.')
-            }
-            return true;
-        }) ,
+        body('username').isLength({ min: 1 }).trim().withMessage('Username must be specified.'),
+        // custom validation removed for better UX    
         body('password').isLength({ min: 1 }).trim().withMessage('Password must be specified.'),
 
     async function(req, res, next) {
@@ -67,7 +58,9 @@ module.exports = {
                 return res.status(400).json({ errors: errors.array() });
             }    
 
-             const { username, password } = req.body;
+        let { username, password } = req.body;
+        
+        username = username.toLowerCase(); // for preventing similar usernames with uppercase e.g: john, joHn.
 
             try{ 
                 const user = await User.findOne({ username });
