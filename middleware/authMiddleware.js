@@ -19,33 +19,4 @@ const authenticateToken = (req, res, next) => {
 }
 
 
-const authorizeRole =  (requiredRoles) => {
-    return async (req, res, next) => {
-        try {
-            const user = await User.findById(req.user.userId);
-            if (!user) {
-                return res.status(404).json({ message: "User not found" });
-            }
-
-            const userRoles = user.roles;
-            console.log("User Roles:", userRoles);
-
-            // Check if any role in userRoles is included in requiredRoles
-            const hasRole = userRoles.some(role => requiredRoles.includes(role));
-
-            console.log("Has Role:", hasRole);
-
-            if (!hasRole) {
-                return res.status(403).json({ message: "Forbidden" });
-            }
-
-            next();
-        } catch (err) {
-            console.error("Error in authorizeRole middleware:", err);
-            return res.status(500).json({ message: "Internal Server Error" });
-        }
-    };
-};
-
-
-module.exports = { authenticateToken, authorizeRole };
+module.exports = { authenticateToken };
