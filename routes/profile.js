@@ -19,6 +19,6 @@ router.delete('/profile', authenticateToken, profileControllers.profile_delete);
 router.get('/search', profileControllers.search_get);
 
 // get all ppl the user sent for
-router.get('/chats/:userId',  profileControllers.chats_get)
+router.get('/chats/:userId', authenticateToken,profileControllers.chats_get)
 
 module.exports = router;
