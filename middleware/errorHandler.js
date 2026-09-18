@@ -1,3 +1,4 @@
+const debug = require('debug')('app:error');
 
 const errorHandler = (err, req, res, next) => {
     debug('Error:', err);
