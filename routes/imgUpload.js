@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const upload = require('../controllers/cloudinaryController');
+const { authenticateToken } = require('../middleware/authMiddleware');
 
-router.post('/upload', upload.single('file'), (req, res) => {
+router.post('/upload', authenticateToken ,upload.single('file'), (req, res) => {
 
     if (!req.file) {
         return res.status(400).json({ error: 'No file provided' });
