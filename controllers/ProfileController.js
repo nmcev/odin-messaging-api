@@ -107,7 +107,11 @@ module.exports = {
     },
     chats_get:async (req, res, next) => {
         try {
-          const { userId } = req.params;
+            const { userId } = req.params;
+            
+            if (userId !== req.user.userId) { 
+                return res.status(401).json({ message: 'Access denied' });
+            } 
       
           const receivedFromUserIds = await Messages.distinct('sender', { receiver: userId }); 
           const sentToUserIds = await Messages.distinct('receiver', { sender: userId });
