@@ -6,39 +6,39 @@ module.exports = {
 
     profile_get: async function (req, res, next) {
         const { userId } = req.user;
-        
+
         try {
             const user = await User.findById(userId).select('-password');
 
             if (!user) {
-                return res.status(404).json({ message: "User Not Found!"})
+                return res.status(404).json({ message: "User Not Found!" })
             }
 
             const joinedDisplay = joinedAt(user);
 
             res.json({ user, joinedAt: joinedDisplay });
 
-        } catch(error) {
+        } catch (error) {
             next(error);
         }
     },
 
     profileUsername_get: async function (req, res, next) {
         const username = req.params.username.toLowerCase();
-        
+
         try {
-            
+
             const user = await User.findOne({ username }).select('-password');
 
             if (!user) {
-                return res.status(404).json({ message: "User Not Found!"})
+                return res.status(404).json({ message: "User Not Found!" })
             }
 
             const joinedDisplay = joinedAt(user);
-            
+
             res.json({ user, joinedAt: joinedDisplay });
 
-        } catch(error){
+        } catch (error) {
             next(error)
         }
     },
@@ -49,7 +49,7 @@ module.exports = {
 
         try {
 
-            const {profilePic } = req.body;
+            const { profilePic } = req.body;
 
             if (!profilePic) {
                 return res.status(400).json({ message: "No changes provided." });
@@ -62,14 +62,14 @@ module.exports = {
                 profilePic: profilePic || currentUser.profilePic,
             };
 
-            
+
             const updatedUser = await User.findByIdAndUpdate(userId, updatedInfo, { new: true })
 
             res.status(200).json({ message: "New changes saved!", user: updatedUser });
 
-        }  catch (error) {
+        } catch (error) {
             next(error)
-        } 
+        }
 
     },
 
@@ -87,72 +87,72 @@ module.exports = {
 
             res.status(200).json({ message: "Account deleted successfully!" });
 
-        } catch(error) {
+        } catch (error) {
             next(error);
         }
     },
-    search_get: async(req, res, next) => {
+    search_get: async (req, res, next) => {
 
-        const { query }  = req.query;
+        const { query } = req.query;
 
         try {
             const results = await User.find({ username: { $regex: new RegExp(query, 'i') } }).select('-password');
 
-            
+
             res.json(results);
 
-          } catch (error) {
+        } catch (error) {
             next(error);
-          }
+        }
     },
-    chats_get:async (req, res, next) => {
+    chats_get: async (req, res, next) => {
         try {
             const { userId } = req.params;
-            
-            if (userId !== req.user.userId) { 
+
+            if (userId !== req.user.userId) {
                 return res.status(401).json({ message: 'Access denied' });
-            } 
-      
-          const receivedFromUserIds = await Messages.distinct('sender', { receiver: userId }); 
-          const sentToUserIds = await Messages.distinct('receiver', { sender: userId });
-          const distinctUserIds = Array.from(new Set([...receivedFromUserIds, ...sentToUserIds]));
-      
-          const users = await User.find({ _id: { $in: distinctUserIds } }, 'username profilePic');
-      
-          const usersWithLastMessages = await Promise.all(users.map(async (user) => {
-            const lastMessage = await Messages.findOne(
-              {
-                $or: [
-                  { sender: userId, receiver: user._id },
-                  { sender: user._id, receiver: userId }
-                ]
-              },
-              {
-                content: 1,
-                sendAt: 1,
-              },
-              { sort: { sendAt: -1 } }
-            );
-      
-            const lastMessageContent = lastMessage ? lastMessage.content : '';
-            const lastMessageSendAt = lastMessage ? lastMessage.sendAt : '';
-      
-            return {
-              _id: user._id,
-              username: user.username,
-              profilePic: user.profilePic,
-              lastMessage: lastMessageContent,
-                lastMessageSendAt
+            }
 
-            };
-          }));
-      
-          usersWithLastMessages.sort((a, b) => new Date(b.lastMessageSendAt) - new Date(a.lastMessageSendAt));
+            const receivedFromUserIds = await Messages.distinct('sender', { receiver: userId });
+            const sentToUserIds = await Messages.distinct('receiver', { sender: userId });
+            const distinctUserIds = Array.from(new Set([...receivedFromUserIds, ...sentToUserIds]));
 
-          res.json(usersWithLastMessages);
+            const users = await User.find({ _id: { $in: distinctUserIds } }, 'username profilePic');
+
+            const usersWithLastMessages = await Promise.all(users.map(async (user) => {
+                const lastMessage = await Messages.findOne(
+                    {
+                        $or: [
+                            { sender: userId, receiver: user._id },
+                            { sender: user._id, receiver: userId }
+                        ]
+                    },
+                    {
+                        content: 1,
+                        sendAt: 1,
+                    },
+                    { sort: { sendAt: -1 } }
+                );
+
+                const lastMessageContent = lastMessage ? lastMessage.content : '';
+                const lastMessageSendAt = lastMessage ? lastMessage.sendAt : '';
+
+                return {
+                    _id: user._id,
+                    username: user.username,
+                    profilePic: user.profilePic,
+                    lastMessage: lastMessageContent,
+                    lastMessageSendAt
+
+                };
+            }));
+
+            usersWithLastMessages.sort((a, b) => new Date(b.lastMessageSendAt) - new Date(a.lastMessageSendAt));
+
+            res.json(usersWithLastMessages);
         } catch (error) {
-          next(error); 
+            next(error);
         }
-      }
-      
+    }
+
 }
