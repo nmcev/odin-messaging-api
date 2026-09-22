@@ -53,7 +53,7 @@ const io = socketHandler(server);
 app.use(errorHandler);
 
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () =>  {
    debug(`server running on port ${PORT}`);
 })
