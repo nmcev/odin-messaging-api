@@ -34,7 +34,7 @@ module.exports = {
     },
     globalMessages_get: async (req, res, next) => {
         try {
-            const messages = await GlobalMessages.find().populate('sender').select('-password');
+            const messages = await GlobalMessages.find().populate('sender');
             
             
 
