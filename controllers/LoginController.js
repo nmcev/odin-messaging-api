@@ -63,7 +63,7 @@ module.exports = {
         username = username.toLowerCase(); // for preventing similar usernames with uppercase e.g: john, joHn.
 
             try{ 
-                const user = await User.findOne({ username });
+                const user = await User.findOne({ username }).select('+password');
 
                 if (!user) {
                     return res.status(400).json({ message: 'Invalid credentials!' });
