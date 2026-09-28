@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 
 const userSchema = new Schema({
     username: {type: String, require: true, unique: true},
-    password: {type: String, require: true},
+    password: { type: String, require: true, select: false,},
     profilePic: {type: String, default: 'https://odin-blog-bucket.s3.eu-north-1.amazonaws.com/3683ee82d45b76e04341886e87616e8c'},
     joinedAt: {type: String, default: Date.now},
 })
