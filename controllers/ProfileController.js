@@ -96,8 +96,17 @@ module.exports = {
         const { query } = req.query;
 
         try {
-            const results = await User.find({ username: { $regex: new RegExp(query, 'i') } }).select('-password');
+            if (typeof query !== 'string' || !query.trim()) {
+                return res.json([]);
+            }
 
+            const trimmedQuery = query.trim().slice(0, 30).toLowerCase();
+
+            const escapedQuery = trimmedQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+            const results = await User.find({ username: { $regex: '^' + escapedQuery } })
+                .select('-password')
+                .limit(10);
 
             res.json(results);
 
