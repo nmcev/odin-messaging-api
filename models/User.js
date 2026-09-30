@@ -5,7 +5,7 @@ const Schema = mongoose.Schema
 const userSchema = new Schema({
     username: {type: String, required: true, unique: true},
     password: { type: String, required: true, select: false,},
-    profilePic: {type: String, default: 'https://odin-blog-bucket.s3.eu-north-1.amazonaws.com/3683ee82d45b76e04341886e87616e8c'},
+    profilePic: {type: String, default: 'https://res.cloudinary.com/dwwfi7a2x/image/upload/v1790789438/uploads/file-1790789437809.webp'},
     joinedAt: {type: String, default: Date.now},
 })
 
