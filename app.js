@@ -6,9 +6,13 @@ const indexRoute = require('./routes/index')
 const morgan = require("morgan");
 const cors = require('cors');
 const server = http.createServer(app);
+const helmet = require('helmet');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false}))
+
+// helmet
+app.use(helmet()); // for security headers
 
 // dotenv
 require('dotenv').config();
