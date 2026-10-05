@@ -14,6 +14,9 @@ app.use(express.urlencoded({ extended: false}))
 // helmet
 app.use(helmet()); // for security headers
 
+// trust proxy
+app.set('trust proxy', 1); // trust first proxy
+
 // dotenv
 require('dotenv').config();
 
