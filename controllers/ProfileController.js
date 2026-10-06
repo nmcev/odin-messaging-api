@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const joinedAt = require("../lib/joinedAt");
 const User = require("../models/User");
 const Messages = require('../models/Message');
@@ -53,6 +54,11 @@ module.exports = {
 
             if (!profilePic) {
                 return res.status(400).json({ message: "No changes provided." });
+            }
+
+            const cloudinaryPrefix = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/`;
+            if (typeof profilePic !== 'string' || !profilePic.startsWith(cloudinaryPrefix)) {
+                return res.status(400).json({ message: "Invalid profile picture URL." });
             }
 
             const currentUser = await User.findById(userId).select('-password');
@@ -117,41 +123,41 @@ module.exports = {
     chats_get: async (req, res, next) => {
         try {
             const { userId } = req.params;
+            const userObjectId = new mongoose.Types.ObjectId(userId);
+            
+            const lastMessagesByPartner = await Messages.aggregate([
+                { $match: { $or: [{ sender: userObjectId }, { receiver: userObjectId }] } },
+                { $sort: { sendAt: -1 } },
+                {
+                    $addFields: {
+                        partnerId: {
+                            $cond: [{ $eq: ['$sender', userObjectId] }, '$receiver', '$sender']
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$partnerId',
+                        lastMessage: { $first: '$content' },
+                        lastMessageSendAt: { $first: '$sendAt' }
+                    }
+                }
+            ]);
 
-
-            const receivedFromUserIds = await Messages.distinct('sender', { receiver: userId });
-            const sentToUserIds = await Messages.distinct('receiver', { sender: userId });
-            const distinctUserIds = Array.from(new Set([...receivedFromUserIds, ...sentToUserIds]));
-
+            const distinctUserIds = lastMessagesByPartner.map((entry) => entry._id);
             const users = await User.find({ _id: { $in: distinctUserIds } }, 'username profilePic');
+            const usersById = new Map(users.map((user) => [user._id.toString(), user]));
 
-            const usersWithLastMessages = await Promise.all(users.map(async (user) => {
-                const lastMessage = await Messages.findOne(
-                    {
-                        $or: [
-                            { sender: userId, receiver: user._id },
-                            { sender: user._id, receiver: userId }
-                        ]
-                    },
-                    {
-                        content: 1,
-                        sendAt: 1,
-                    },
-                    { sort: { sendAt: -1 } }
-                );
-
-                const lastMessageContent = lastMessage ? lastMessage.content : '';
-                const lastMessageSendAt = lastMessage ? lastMessage.sendAt : '';
-
+            const usersWithLastMessages = lastMessagesByPartner.map((entry) => {
+                const user = usersById.get(entry._id.toString());
                 return {
-                    _id: user._id,
-                    username: user.username,
-                    profilePic: user.profilePic,
-                    lastMessage: lastMessageContent,
-                    lastMessageSendAt
-
+                    _id: entry._id,
+                    username: user ? user.username : '',
+                    profilePic: user ? user.profilePic : '',
+                    lastMessage: entry.lastMessage || '',
+                    lastMessageSendAt: entry.lastMessageSendAt || ''
                 };
-            }));
+            });
 
             usersWithLastMessages.sort((a, b) => new Date(b.lastMessageSendAt) - new Date(a.lastMessageSendAt));
 
