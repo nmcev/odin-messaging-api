@@ -2,6 +2,7 @@ const debug = require('debug')('app:error');
 
 const errorHandler = (err, req, res, next) => {
     debug('Error:', err);
+    console.error(err);
 
     let statusCode = 500;
     let message = 'Internal Server Error';
