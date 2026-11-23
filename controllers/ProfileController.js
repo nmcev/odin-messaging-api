@@ -151,7 +151,22 @@ module.exports = {
                     $group: {
                         _id: '$partnerId',
                         lastMessage: { $first: '$content' },
-                        lastMessageSendAt: { $first: '$sendAt' }
+                        lastMessageSendAt: { $first: '$sendAt' },
+                        // messages this user received in the conversation and hasn't opened yet
+                        unreadCount: {
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $and: [
+                                            { $eq: ['$receiver', userObjectId] },
+                                            { $eq: [{ $ifNull: ['$readAt', null] }, null] }
+                                        ]
+                                    },
+                                    1,
+                                    0
+                                ]
+                            }
+                        }
                     }
                 }
             ]);
@@ -167,7 +182,8 @@ module.exports = {
                     username: user ? user.username : '',
                     profilePic: user ? user.profilePic : '',
                     lastMessage: entry.lastMessage || '',
-                    lastMessageSendAt: entry.lastMessageSendAt || ''
+                    lastMessageSendAt: entry.lastMessageSendAt || '',
+                    unreadCount: entry.unreadCount || 0
                 };
             });
 
