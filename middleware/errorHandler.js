@@ -10,6 +10,15 @@ const errorHandler = (err, req, res, next) => {
     if (err.name === 'ValidationError') {
         statusCode = 400;
         message = err.message;
+    } else if (err.name === 'CastError') {
+        statusCode = 400;
+        message = 'Invalid id';
+    } else if (err.code === 11000) {
+        statusCode = 409;
+        message = 'Duplicate value';
+    } else if (err.name === 'MulterError') {
+        statusCode = 400;
+        message = err.message;
     } else if (err.name === 'UnauthorizedError') {
         statusCode = 401;
         message = 'Unauthorized Access';

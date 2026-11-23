@@ -58,6 +58,7 @@ app.use('/api',
 
 //initialize socket connection
 const io = socketHandler(server);
+app.set('io', io);
 
 // Error handler middleware
 app.use(errorHandler);

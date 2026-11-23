@@ -3,16 +3,19 @@ const router = express.Router();
 const loginControllers = require('../controllers/LoginController');
 const { rateLimit } = require('express-rate-limit');
 
-const authLimiter = rateLimit({
+const makeLimiter = () => rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 5,
     message: 'Too many attempts, please try again later.'
 })
 
+const registerLimiter = makeLimiter();
+const loginLimiter = makeLimiter();
+
 // Registration
-router.post('/register', authLimiter, loginControllers.register_post)
+router.post('/register', registerLimiter, loginControllers.register_post)
 
 // Login route 
-router.post('/login', authLimiter, loginControllers.login_post);
+router.post('/login', loginLimiter, loginControllers.login_post);
 
 module.exports = router;

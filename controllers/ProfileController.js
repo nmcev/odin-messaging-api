@@ -91,6 +91,9 @@ module.exports = {
                 return res.status(404).json({ message: "User not found or already deleted!" });
             }
 
+            await Messages.deleteMany({ $or: [{ sender: userId }, { receiver: userId }] });
+            req.app.get('io')?.disconnectUser(userId);
+
             res.status(200).json({ message: "Account deleted successfully!" });
 
         } catch (error) {
@@ -122,11 +125,20 @@ module.exports = {
     },
     chats_get: async (req, res, next) => {
         try {
-            const { userId } = req.params;
+            // always use the authenticated user, never a URL param
+            const { userId } = req.user;
             const userObjectId = new mongoose.Types.ObjectId(userId);
-            
+
             const lastMessagesByPartner = await Messages.aggregate([
-                { $match: { $or: [{ sender: userObjectId }, { receiver: userObjectId }] } },
+                {
+                    $match: {
+                        $and: [
+                            { $or: [{ sender: userObjectId }, { receiver: userObjectId }] },
+                            // skip expired disappearing messages the TTL sweep hasn't removed yet
+                            { $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }] }
+                        ]
+                    }
+                },
                 { $sort: { sendAt: -1 } },
                 {
                     $addFields: {

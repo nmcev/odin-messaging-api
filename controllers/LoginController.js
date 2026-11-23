@@ -10,7 +10,7 @@ module.exports = {
         
         body('username').trim().isLength({ min: 1 }).withMessage('Username must be specified.'),
         // custom validation removed for better UX    
-        body('password').trim().isLength({ min: 5 }).withMessage('Password must be 5 characters at latest.'),
+        body('password').isString().isLength({ min: 5 }).withMessage('Password must be at least 5 characters.'),
 
     async function(req, res, next) {
 
@@ -48,7 +48,7 @@ module.exports = {
     login_post: [         
         body('username').trim().isLength({ min: 1 }).withMessage('Username must be specified.'),
         // custom validation removed for better UX    
-        body('password').trim().isLength({ min: 5 }).withMessage('Password must be 5 characters at latest.'),
+        body('password').isString().isLength({ min: 5 }).withMessage('Password must be at least 5 characters.'),
 
     async function(req, res, next) {
 

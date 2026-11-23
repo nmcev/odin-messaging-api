@@ -19,6 +19,8 @@ router.delete('/profile', authenticateToken, profileControllers.profile_delete);
 router.get('/search', authenticateToken,profileControllers.search_get);
 
 // get all ppl the user sent for
-router.get('/chats/:userId', authenticateToken,profileControllers.chats_get)
+router.get('/chats', authenticateToken, profileControllers.chats_get)
+// legacy path: the :userId param is ignored, the token decides whose chats are returned
+router.get('/chats/:userId', authenticateToken, profileControllers.chats_get)
 
 module.exports = router;

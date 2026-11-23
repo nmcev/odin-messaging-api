@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Messages = require('../models/Message');
 const GlobalMessages = require('../models/GlobalMessage');
 
@@ -11,6 +12,10 @@ module.exports = {
 
             if (!userId || !otherUserId) {
                 return res.status(400).json({ error: 'Missing userId or otherUserId' });
+            }
+
+            if (!mongoose.isValidObjectId(otherUserId)) {
+                return res.status(400).json({ error: 'Invalid otherUserId' });
             }
 
             const notExpired = {
