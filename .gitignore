@@ -1,2 +1,4 @@
 node_modules
 .env
+# pictures saved in local upload mode
+uploads/

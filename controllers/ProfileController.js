@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const joinedAt = require("../lib/joinedAt");
 const User = require("../models/User");
 const Messages = require('../models/Message');
+const { isAllowedImageUrl } = require('../config/uploads');
 
 module.exports = {
 
@@ -56,8 +57,7 @@ module.exports = {
                 return res.status(400).json({ message: "No changes provided." });
             }
 
-            const cloudinaryPrefix = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/`;
-            if (typeof profilePic !== 'string' || !profilePic.startsWith(cloudinaryPrefix)) {
+            if (!isAllowedImageUrl(profilePic)) {
                 return res.status(400).json({ message: "Invalid profile picture URL." });
             }
 

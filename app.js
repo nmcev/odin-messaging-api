@@ -24,8 +24,9 @@ require('dotenv').config();
 app.use(morgan("tiny"));
 
 // cors setup
+const allowedOrigins = require('./config/origins');
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://talkmate-odin.netlify.app'],
+    origin: allowedOrigins,
     credentials: true
 }))
 // mongo connection 
@@ -44,6 +45,17 @@ connectMongo().catch((err) => {
     console.error('Failed to connect to MongoDB:', err);
     process.exit(1);
 });
+
+// pictures stored on this machine (UPLOAD_STORAGE=local, e.g. an offline demo)
+const uploadsConfig = require('./config/uploads');
+if (uploadsConfig.LOCAL) {
+    app.use('/uploads', express.static(uploadsConfig.LOCAL_DIR, {
+        maxAge: '7d',
+        immutable: true,
+        // helmet defaults to same-origin; the app runs on another port, so allow it to embed these
+        setHeaders: (res) => res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin'),
+    }));
+}
 
 // routes 
 app.get('/', (req, res) => {
